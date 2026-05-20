@@ -3,10 +3,25 @@ import numpy as np
 
 class GaussSeidel:
 
-    def __init__(self, A, b, tolerancia=1e-3, max_iter=100):
+    def __init__(
 
-        self.A = np.array(A, dtype=float)
-        self.b = np.array(b, dtype=float)
+        self,
+        A,
+        b,
+        tolerancia=1e-3,
+        max_iter=100
+
+    ):
+
+        self.A = np.array(
+            A,
+            dtype=float
+        )
+
+        self.b = np.array(
+            b,
+            dtype=float
+        )
 
         self.tolerancia = tolerancia
         self.max_iter = max_iter
@@ -21,8 +36,15 @@ class GaussSeidel:
 
         usado = [False] * self.n
 
-        nueva_A = np.zeros_like(self.A, dtype=float)
-        nueva_b = np.zeros_like(self.b, dtype=float)
+        nueva_A = np.zeros_like(
+            self.A,
+            dtype=float
+        )
+
+        nueva_b = np.zeros_like(
+            self.b,
+            dtype=float
+        )
 
         for col in range(self.n):
 
@@ -35,7 +57,10 @@ class GaussSeidel:
 
                     if abs(self.A[fila][col]) > mayor:
 
-                        mayor = abs(self.A[fila][col])
+                        mayor = abs(
+                            self.A[fila][col]
+                        )
+
                         fila_mayor = fila
 
             usado[fila_mayor] = True
@@ -47,23 +72,29 @@ class GaussSeidel:
         self.b = nueva_b
 
     # ==========================================
-    # VALIDAR DOMINANCIA DIAGONAL
+    # VALIDAR DIAGONAL DOMINANTE
     # ==========================================
 
     def es_diagonal_dominante(self):
 
         for i in range(self.n):
 
-            diagonal = abs(self.A[i][i])
+            diagonal = abs(
+                self.A[i][i]
+            )
 
             suma = 0
 
             for j in range(self.n):
 
                 if i != j:
-                    suma += abs(self.A[i][j])
+
+                    suma += abs(
+                        self.A[i][j]
+                    )
 
             if diagonal < suma:
+
                 return False
 
         return True
@@ -74,78 +105,203 @@ class GaussSeidel:
 
     def resolver(self):
 
+        # Vector inicial
         x = np.zeros(self.n)
 
-        print("\nMatriz original:\n")
+        # Lista de errores
+        errores = []
+
+        print("\n==============================")
+        print("MATRIZ ORIGINAL")
+        print("==============================\n")
+
         print(self.A)
 
-        # Reordenar
+        # ======================================
+        # REORDENAR MATRIZ
+        # ======================================
+
         self.reordenar_matriz()
 
-        print("\nMatriz reordenada:\n")
+        print("\n==============================")
+        print("MATRIZ REORDENADA")
+        print("==============================\n")
+
         print(self.A)
 
-        print("\nVector independiente reordenado:\n")
+        print("\n==============================")
+        print("VECTOR INDEPENDIENTE")
+        print("==============================\n")
+
         print(self.b)
 
-        # Validación
+        # ======================================
+        # VALIDAR DIAGONAL DOMINANTE
+        # ======================================
+
+        print("\n==============================")
+        print("VALIDACIÓN")
+        print("==============================")
+
         if self.es_diagonal_dominante():
 
-            print("\nLa matriz ES diagonal dominante.")
+            print(
+                "\nLa matriz ES "
+                "diagonal dominante."
+            )
 
         else:
 
-            print("\nAdvertencia: la matriz NO es diagonal dominante.")
-            print("El método podría no converger.")
+            print(
+                "\nAdvertencia:"
+            )
+
+            print(
+                "La matriz NO es "
+                "diagonal dominante."
+            )
+
+            print(
+                "El método podría "
+                "no converger."
+            )
+
+        # ======================================
+        # ITERACIONES
+        # ======================================
 
         print("\n==============================")
         print("ITERACIONES")
-        print("==============================\n")
+        print("==============================")
 
         for k in range(self.max_iter):
 
             x_old = x.copy()
 
-            print(f"Iteración {k+1}")
+            print(f"\nIteración {k+1}")
 
             for i in range(self.n):
 
                 suma1 = 0
                 suma2 = 0
 
+                # --------------------------------
                 # Valores nuevos
+                # --------------------------------
+
                 for j in range(i):
 
-                    suma1 += self.A[i][j] * x[j]
+                    suma1 += (
+                        self.A[i][j] * x[j]
+                    )
 
-                # Valores viejos
-                for j in range(i + 1, self.n):
+                # --------------------------------
+                # Valores anteriores
+                # --------------------------------
 
-                    suma2 += self.A[i][j] * x_old[j]
+                for j in range(
+                    i + 1,
+                    self.n
+                ):
 
-                # Fórmula
+                    suma2 += (
+                        self.A[i][j]
+                        * x_old[j]
+                    )
+
+                # --------------------------------
+                # Fórmula Gauss-Seidel
+                # --------------------------------
+
                 x[i] = (
-                    self.b[i] - suma1 - suma2
+
+                    self.b[i]
+                    - suma1
+                    - suma2
+
                 ) / self.A[i][i]
 
-                print(f"x{i+1} = {x[i]:.6f}")
+            # ==================================
+            # MOSTRAR VECTOR ACTUAL
+            # ==================================
 
-            # Error infinito
+            print(
+
+                " | ".join(
+
+                    [
+
+                        f"x{i+1}={x[i]:.6f}"
+
+                        for i in range(self.n)
+
+                    ]
+                )
+            )
+
+            # ==================================
+            # ERROR
+            # ==================================
+
             error = np.linalg.norm(
+
                 x - x_old,
+
                 ord=np.inf
             )
 
-            print(f"Error = {error:.6f}\n")
+            errores.append(error)
 
-            # Convergencia
+            print(
+                f"Error = {error:.10f}"
+            )
+
+            # ==================================
+            # CONVERGENCIA
+            # ==================================
+
             if error < self.tolerancia:
 
-                print("==============================")
+                print("\n==============================")
                 print("CONVERGENCIA ALCANZADA")
                 print("==============================")
 
+                print(
+                    f"\nIteraciones realizadas: "
+                    f"{k+1}"
+                )
+
+                print(
+                    f"Error final: "
+                    f"{error:.10f}"
+                )
+
+                print(
+                    "\nNorma utilizada:"
+                )
+
+                print("Norma infinito")
+
+                print(
+                    "\nLa solución converge "
+                    "porque el error es "
+                    "menor que la tolerancia."
+                )
+
                 return x
 
-        print("\nNo convergió.")
+        # ======================================
+        # NO CONVERGIÓ
+        # ======================================
+
+        print("\n==============================")
+        print("NO CONVERGIÓ")
+        print("==============================")
+
+        print(
+            f"\nSe alcanzó el máximo "
+            f"de iteraciones "
+            f"({self.max_iter})."
+        )
+
         return x
