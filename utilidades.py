@@ -19,7 +19,7 @@ class Utilidades:
 
         while True:
             #borra espacios antes y despues de lo ingresado
-            funcion_str = input ("f(x) =").strip()
+            funcion_str = input ("f(x) =").strip().lower()
 
             #validar que no este vacio
             if funcion_str =="":

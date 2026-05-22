@@ -98,7 +98,7 @@ class Main1:
             if opcion == "1":
                 print("\nIngrese la función polinomial")
                 print("Ejemplo:\nForma 1: x**3 - 2*x - 5\n"
-                "Forma 2: x^3-2x-5)"
+                "Forma 2: x^3-2x-5"
                 )
                 
                 #Valida el string y lo convierte en una expresion matematica para ser evaluada
